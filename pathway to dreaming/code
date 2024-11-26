@@ -1,0 +1,43 @@
+volatile int ledState;
+
+#define PinLED1 2
+#define PinLED2 3
+#define PinLED3 4
+#define PinPressSensor A4
+#define PressValveHigh 100
+#define PressValveLow 50
+#define LED_INTERVAL 100 // order turn on (ms)
+#define OFF_DELAY 1000   // turn off (ms)
+
+void setup() {
+  ledState = 0;
+  Serial.begin(9600);
+  pinMode(PinLED1, OUTPUT);
+  pinMode(PinLED2, OUTPUT);
+  pinMode(PinLED3, OUTPUT);
+  pinMode(PinPressSensor, INPUT);
+}
+
+void loop() {
+  Serial.println(analogRead(PinPressSensor)); 
+
+  if (ledState == 0 && analogRead(PinPressSensor) > PressValveHigh) {
+    ledState = 1;
+    // open the light 
+    digitalWrite(PinLED1, HIGH);
+    delay(LED_INTERVAL);
+    digitalWrite(PinLED2, HIGH);
+    delay(LED_INTERVAL);
+    digitalWrite(PinLED3, HIGH);
+
+  } else if (ledState == 1 && analogRead(PinPressSensor) < PressValveLow) {
+    // lasting 1s before turn off
+    delay(OFF_DELAY);
+
+    // turn off
+    ledState = 0;
+    digitalWrite(PinLED1, LOW);
+    digitalWrite(PinLED2, LOW);
+    digitalWrite(PinLED3, LOW);
+  }
+}
